@@ -4,6 +4,8 @@ A classroom question-and-answer app built with Expo, Firebase Authentication, an
 
 **Group 2:** Jessica Linn Donoho, Qier Long, Mustafa Ali Mirza.
 
+**Try the deployed app:** [project-cdb19.web.app](https://project-cdb19.web.app). Each teammate can create an account and join a shared room with its six-character code.
+
 ## Features
 
 - Email/password accounts, a display name, and restored sign-in sessions.
@@ -70,7 +72,7 @@ npx firebase-tools login
 npm run deploy:hosting
 ```
 
-The deployment targets the `project-cdb19` Firebase project. The public URL will be `https://project-cdb19.web.app` after Hosting is enabled for the project. Add `project-cdb19.web.app` to **Authentication → Settings → Authorized domains** if it is not already listed. Hosting is a static client app, so Firebase web configuration appears in the downloaded bundle; Firestore rules must continue to protect data access.
+The deployment targets the `project-cdb19` Firebase project at `https://project-cdb19.web.app`. Hosting is a static client app, so Firebase web configuration appears in the downloaded bundle; Firestore rules must continue to protect data access.
 
 The app creates its documents when users register, create rooms, and post. No manual collection seeding is necessary. Queries use direct document reads or a single `createdAt` order; no composite indexes are required. `firestore.indexes.json` records this explicitly.
 

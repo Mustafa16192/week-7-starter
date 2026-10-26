@@ -46,3 +46,6 @@ The PR remains closed pending Mustafa’s local review. The group is responsible
 Mustafa published the Firestore rules in the shared Firebase project. A two-account cloud check then confirmed authentication, room creation/joining, question and response persistence, live updates, votes, lecturer permissions, anonymous-author privacy, and closed-room behavior. Temporary Auth accounts were removed; the labeled QA room was closed. The local web server was switched from emulators to the group's cloud configuration. See QA.md for evidence and remaining testing limits.
 
 Mobile inspection also identified retained feed scroll when entering a thread. Navigation now scrolls to the top and presents a compact header. TypeScript caught a React Native scroll-ref type mismatch introduced during that change; the ref now uses the component's actual instance type.
+
+## Hosting deployment — October 26, 2026
+Added Firebase Hosting configuration for the Expo web export, pinned the default Firebase project, and documented a repeatable deploy command. After Mustafa signed in to the Firebase CLI, deployment released successfully to https://project-cdb19.web.app. Verified the hosted sign-in page loads and Firebase Authentication accepts requests from that domain. Hosting setup and the shareable link are documented in README.md.

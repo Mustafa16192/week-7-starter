@@ -31,6 +31,10 @@ The test room `ZHUVST`, titled `QA verification · 26 Oct 2026`, was closed afte
 
 The local server at http://localhost:8097 was restarted in cloud mode and the browser refreshed. The sign-in screen appeared without the local-demo banner. Emulator demo accounts are separate from cloud accounts; use a real project account or the app's Create an account flow.
 
+## Hosting check
+
+Deployed the Expo web build to Firebase Hosting at https://project-cdb19.web.app. The hosted sign-in screen loaded. A sign-in request with a deliberately nonexistent test address returned the expected invalid-credentials message rather than an unauthorized-domain error, confirming that the hosted origin can reach Firebase Authentication. No account was created by this check.
+
 ## Limits
 
-The live service flow was verified with the Firebase client SDK; the full signed-in browser flow was exercised against emulators. No load test, screen-reader audit, or native device interaction test was performed. Rules behavior was tested rather than downloading the deployed rules source for an exact comparison. No PR was opened and no implementation was pushed.
+The live service flow was verified with the Firebase client SDK; the full signed-in browser flow was exercised against emulators. No load test, screen-reader audit, or native device interaction test was performed. Rules behavior was tested rather than downloading the deployed rules source for an exact comparison. The Hosting project was deployed; app code and deployment setup are pushed to the group fork. No upstream PR was opened.
