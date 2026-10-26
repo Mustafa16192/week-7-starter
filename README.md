@@ -10,7 +10,7 @@ Create an account, add a task, and check it off together. Changes appear on othe
 
 - [Process documentation — DLM-week7](https://docs.google.com/document/d/1M8E3EuWza5_kyurq_6rJ0kWZMs2QGRfMJ-M4N_6gksg/edit)
 - [Team fork](https://github.com/Mustafa16192/week-7-starter)
-- Upstream PR: will be added after the first validated build.
+- [Upstream PR #1](https://github.com/UMSI669/week-7-starter/pull/1)
 
 ## How Firebase is used
 
@@ -83,7 +83,11 @@ npm run test:firebase
 
 `test:firebase` runs against the configured **class/test project** with deployed rules. It creates two disposable `dlm-qa-*` accounts and `qa-*` tasks, checks live updates and authorization, and removes its own fixtures. It does not require admin credentials. Do not run it against an unrelated production project.
 
-Validation results and limitations are maintained in the process document. The UI distinguishes pending writes from confirmed changes, preserves the task composer after errors, and provides a reconnect action for failed subscriptions. Full offline editing, password reset, invitations, and task-title editing are outside this prototype.
+Validated October 26, 2026: TypeScript, ESLint, web export, iOS bundle export, and all eight live Firebase checks passed. Browser QA covered sign-in, creation, completion, filters, restored session/data after reload, delete confirmation/cancel, and sign-out; the board was visually checked at 390 × 844. Native device interaction has not been tested. See the process document for detailed results.
+
+![Common Ground mobile web board](docs/common-ground-mobile.jpg)
+
+`npm audit` reported nine high-severity dependency advisories. Suggested forced downgrades would change the supported Expo/Firebase stack, so they were not applied; dependency remediation remains follow-up work. The UI distinguishes pending writes from confirmed changes, preserves the task composer after errors, and provides a reconnect action for failed subscriptions. Full offline editing, password reset, invitations, and task-title editing are outside this prototype.
 
 ## AI use and references
 
