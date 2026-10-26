@@ -30,13 +30,12 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# Local configuration (never commit credentials)
+# Ignore every .env file and variant
 .env
 .env.*
+
+# Keep the example configuration tracked
 !.env.example
-firebase-debug.log
-firestore-debug.log
-.firebase/
 
 # typescript
 *.tsbuildinfo
