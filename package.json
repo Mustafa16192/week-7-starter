@@ -12,6 +12,7 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "build": "expo export --platform web",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting --project project-cdb19",
     "test": "node --import tsx --test tests/unit.test.ts",
     "test:rules": "firebase emulators:exec --project demo-dlm-week7 --only firestore \"node --import tsx --test tests/rules.test.ts\"",
     "emulators": "firebase emulators:start --project demo-dlm-week7 --only auth,firestore",

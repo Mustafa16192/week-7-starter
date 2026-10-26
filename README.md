@@ -61,6 +61,17 @@ Analytics, Storage, and Messaging are not used. `measurementId` is unnecessary. 
 6. Ensure your web host is an authorized Firebase Auth domain when needed.
 7. Set `EXPO_PUBLIC_USE_EMULATORS=false` (or omit it), restart Expo, and test with two separate browser sessions.
 
+### Deploy to Firebase Hosting
+
+The web build is configured for Firebase Hosting in `firebase.json`; Expo exports to `dist/`. Sign in to the Firebase CLI as a project member, then deploy with:
+
+```sh
+npx firebase-tools login
+npm run deploy:hosting
+```
+
+The deployment targets the `project-cdb19` Firebase project. The public URL will be `https://project-cdb19.web.app` after Hosting is enabled for the project. Add `project-cdb19.web.app` to **Authentication → Settings → Authorized domains** if it is not already listed. Hosting is a static client app, so Firebase web configuration appears in the downloaded bundle; Firestore rules must continue to protect data access.
+
 The app creates its documents when users register, create rooms, and post. No manual collection seeding is necessary. Queries use direct document reads or a single `createdAt` order; no composite indexes are required. `firestore.indexes.json` records this explicitly.
 
 ## Run the local demo
