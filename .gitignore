@@ -43,3 +43,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Firebase emulator artifacts
+.firebase/
+*-debug.log
+*-debug.log.*

@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Classroom Q&A",
+    "slug": "dlm-classroom-qa",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "web": {
+      "bundler": "metro"
+    },
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}

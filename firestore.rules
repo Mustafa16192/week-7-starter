@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function profile() { return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data; }
+    function text(value, max) { return value is string && value.size() > 0 && value.size() <= max && value.matches('[\\s\\S]*[^\\s][\\s\\S]*'); }
+    function member(code) { return signedIn() && exists(/databases/$(database)/documents/sessions/$(code)/members/$(request.auth.uid)); }
+    function room(code) { return get(/databases/$(database)/documents/sessions/$(code)).data; }
+    function openMember(code) { return member(code) && room(code).status == 'open'; }
+    function lecturer(code) { return member(code) && room(code).lecturerId == request.auth.uid; }
+    match /profiles/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['displayName']) && text(request.resource.data.displayName, 50);
+    }
+    match /users/{uid}/rooms/{code} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['joinedAt']) && request.resource.data.joinedAt == request.time
+        && getAfter(/databases/$(database)/documents/sessions/$(code)/members/$(uid)).data.joinedAt == request.time;
+    }
+    match /users/{uid}/authored/{recordId} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['sessionId', 'questionId', 'createdAt'])
+        && request.resource.data.sessionId is string && request.resource.data.questionId is string
+        && recordId == request.resource.data.sessionId + '_' + request.resource.data.questionId
+        && openMember(request.resource.data.sessionId) && request.resource.data.createdAt == request.time
+        && !exists(/databases/$(database)/documents/sessions/$(request.resource.data.sessionId)/questions/$(request.resource.data.questionId))
+        && getAfter(/databases/$(database)/documents/sessions/$(request.resource.data.sessionId)/questions/$(request.resource.data.questionId)).data.createdAt == request.time;
+    }
+    match /sessions/{code} {
+      // A known code lets signed-in users preview metadata; room enumeration is denied.
+      allow get: if signedIn();
+      allow create: if signedIn() && code.matches('^[A-Z0-9]{6}$')
+        && request.resource.data.keys().hasOnly(['title','description','lecturerId','lecturerName','status','createdAt'])
+        && text(request.resource.data.title, 100)
+        && request.resource.data.description is string && request.resource.data.description.size() <= 500
+        && request.resource.data.lecturerId == request.auth.uid
+        && request.resource.data.lecturerName == profile().displayName
+        && request.resource.data.status == 'open' && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/sessions/$(code)/members/$(request.auth.uid)).data.joinedAt == request.time;
+      allow update: if lecturer(code)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['open','closed'];
+      match /members/{uid} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid
+          && exists(/databases/$(database)/documents/profiles/$(uid))
+          && request.resource.data.keys().hasOnly(['joinedAt']) && request.resource.data.joinedAt == request.time
+          && getAfter(/databases/$(database)/documents/sessions/$(code)).data.status == 'open';
+      }
+      match /questions/{questionId} {
+        allow read: if member(code);
+        allow create: if openMember(code)
+          && request.resource.data.keys().hasOnly(['text','authorName','anonymous','answered','createdAt'])
+          && text(request.resource.data.text, 1000) && request.resource.data.anonymous is bool
+          && request.resource.data.authorName == (request.resource.data.anonymous ? 'Anonymous' : profile().displayName)
+          && request.resource.data.answered == false && request.resource.data.createdAt == request.time
+          && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)/authored/$(code + '_' + questionId)).data.createdAt == request.time;
+        allow update: if openMember(code) && lecturer(code)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['answered'])
+          && request.resource.data.answered is bool;
+        match /responses/{responseId} {
+          allow read: if member(code);
+          allow create: if openMember(code)
+            && exists(/databases/$(database)/documents/sessions/$(code)/questions/$(questionId))
+            && request.resource.data.keys().hasOnly(['text','authorName','authorId','createdAt'])
+            && text(request.resource.data.text, 1000) && request.resource.data.authorId == request.auth.uid
+            && request.resource.data.authorName == profile().displayName && request.resource.data.createdAt == request.time;
+        }
+        match /votes/{uid} {
+          allow read: if member(code);
+          allow create: if openMember(code) && request.auth.uid == uid
+            && exists(/databases/$(database)/documents/sessions/$(code)/questions/$(questionId))
+            && request.resource.data.keys().hasOnly(['createdAt']) && request.resource.data.createdAt == request.time;
+          allow delete: if openMember(code) && request.auth.uid == uid;
+        }
+      }
+    }
+  }
+}
